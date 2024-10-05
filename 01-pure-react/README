@@ -1,0 +1,2 @@
+# Create a react app using create-react-app version 5
+npx create-react-app@5 pizza-menu

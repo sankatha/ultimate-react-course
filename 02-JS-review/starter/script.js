@@ -1,3 +1,5 @@
+// Use Quokka.js to run on the script to inspect variable output.
+
 const data = [
   {
     id: 1,
@@ -142,3 +144,186 @@ function getBooks() {
 function getBook(id) {
   return data.find((d) => d.id === id);
 }
+
+// De-structuring
+const book = getBook(3);
+
+// const title = book.title;
+// const author = book.author;
+
+// You need to use the exact property names
+// from book to get the variables populated.
+// This is JavaScript. Same as what you can
+// do as above. This is called de-structuring.
+const { title, author, pages, publicationDate, genres, hasMovieAdaptation } =
+  book;
+
+// const primaryGenre = genres[0];
+// const secondaryGenre = genres[1];
+
+// Similarly doing it using Array based de-strucring
+// When you do ...otherGenres it will extract everything else to
+// a variable called otherGenres. This should be at the end always.
+// This is called rest operator.
+const [primaryGenre, secondaryGenre, ...otherGenres] = genres;
+console.log(primaryGenre, secondaryGenre, otherGenres);
+
+// Spread
+// Spread operator is same as rest operator. Here it will
+// take all the values of geners and place one by one with
+// "epic fantacy" creating a new array. Here the spread operator
+// ...genres should be the first argument or the last.
+// const newGenres = ["epic fantacy", ...genres];
+const newGenres = [...genres, "epic fantacy"];
+console.log(newGenres);
+
+// Spread Operator on objects. You can also override the existing object properties.
+const updatedBook = {
+  ...book,
+  // Adding a new property
+  moviePublicationDate: "2001-12-19",
+  // Overrding an existing property
+  pages: 1210,
+};
+console.log(updatedBook);
+
+// Template literals. ES-6 Javascript feature. Should use `` (Back ticks)
+const summary = `${title}, a ${pages} page long book, was written by ${author} and published in ${
+  publicationDate.split("-")[0]
+}. The book has ${hasMovieAdaptation ? "" : "not"} been adopted aas a movie`;
+console.log(summary);
+
+// Ternary operator instead of if/else
+const pagesRange = pages > 1000 ? "over a 1000" : "less that 1000";
+console.log(`The book has ${pagesRange} pages`);
+
+// Arrow Functions
+// Quick one liner functions. Can be used for all functions but is a bad practice.
+// Here the getYear is a function and publicationDate is the argument
+//
+// Same as
+// function getYear(str) {
+//  return publicationDate.split("-")[0];
+// }
+const getYear = (publicationDate) => publicationDate.split("-")[0];
+console.log(getYear(publicationDate));
+
+// Short circuiting and logical oerators: &&, ||, ??
+// If &&, first value is false, it will immidetly short circuit.
+// Or is exactly the opposite.
+// ?? exactly the same as || but will only short circuit if the value of null or undefined.
+// With ||, if the value is 0, it will falsify.
+console.log(true && "Some string");
+console.log(false && "Some string");
+
+// Optional Chaining. If something before ? does not exist, it will no throw error.
+function getTotalReviewCount(book) {
+  // If
+  const goodRead = book.reviews.goodreads?.reviewsCount ?? 0;
+  const libraryAnything = book.reviews.librarything?.reviewsCount ?? 0;
+  return goodRead + libraryAnything;
+}
+
+const totalReviewCount = getTotalReviewCount(book);
+console.log(totalReviewCount);
+
+// Array Map
+// Does not change the original Array
+
+// Example 1
+const x = [1, 2, 3, 4, 5, 6].map((element) => element * 2);
+console.log(x);
+
+// Example 2
+const books = getBooks();
+const bookTitles = books.map((book) => book.title);
+console.log(bookTitles);
+
+// Example 3
+const essentialData = books.map((book) => ({
+  title: book.title,
+  author: book.author,
+}));
+console.log(essentialData);
+
+// Array Filter
+// Again does not change the original array. You can chain like in Java.
+const booksHasMoreThanPages = books.filter((book) => book.pages >= 500);
+console.log(booksHasMoreThanPages);
+
+// Array Reduce
+// Again does not change the original array
+// first argument is accumilator where it get reduced to
+// second argument is the array where we provide the function to reduce
+// and the initial value for the accumilator.
+const totalPagesOfAllBooks = books.reduce(
+  (accumilator, book) => accumilator + book.pages,
+  0
+);
+console.log(totalPagesOfAllBooks);
+
+// Array Sort
+// This changes the original array/mutates
+// Example 1
+const sortArrayExample = [3, 7, 1, 9, 6];
+// a is the first value and b is second value and it takes as pairs.
+// so 3 - 7 = -4, 7 - 1 = 6 etc. So it will sort from smallest to highest(Ascending)
+const sortedArrayAsc = sortArrayExample.sort((a, b) => a - b);
+console.log(sortedArrayAsc);
+console.log(sortArrayExample);
+
+const sortedArrayDsc = sortArrayExample.sort((a, b) => b - a);
+console.log(sortedArrayDsc);
+console.log(sortArrayExample);
+
+// To work around mutation.
+const copyArray = sortArrayExample.slice();
+const sortedArrayImmuteAsc = copyArray.sort((a, b) => a - b);
+console.log(sortedArrayImmuteAsc);
+console.log(sortArrayExample);
+
+// Example 2
+const sortedByPages = books.slice().sort((a, b) => a.pages - b.pages);
+console.log(sortedByPages);
+
+// Immutable Arrays.
+// Example 1 : Add elements immutably (Add book object)
+const newBook = {
+  id: 6,
+  title: "Harry Potter and the chamber of secrets",
+  author: "J. K. Rowling",
+};
+
+const booksAfterAdd = [...books, newBook];
+console.log(booksAfterAdd);
+
+// Example 2: Delete a book
+const boolsAfterDelete = booksAfterAdd.filter((book) => book.id !== 3);
+console.log(boolsAfterDelete);
+
+// Example 3: Update
+const booksAfterUpdate = boolsAfterDelete.map((book) =>
+  // Spread and update the object pages if id is 1 or return the book as is.
+  book.id === 1 ? { ...book, pages: 1230 } : book
+);
+console.log(booksAfterUpdate);
+
+// ===================
+// Javascript Promises.
+// ===================
+// https://jsonplaceholder.typicode.com/ for dumy endpoint.
+// Fetch is only added to node from node version 18. Fetch is aync and returns a promise.
+// Then will act upon completion
+fetch("https://jsonplaceholder.typicode.com/todos/10")
+  .then((response) => response.json())
+  .then((data) => console.log(data));
+
+// Async/Await
+async function getToDos() {
+  // Here JS will not move to the next line and will wait until response.
+  const res = await fetch("https://jsonplaceholder.typicode.com/todos/10");
+  const data = await res.json();
+  console.log(data);
+}
+
+getToDos();
